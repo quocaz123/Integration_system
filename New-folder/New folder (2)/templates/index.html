@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css"
+        rel="stylesheet">
+    <!-- Font Awesome CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/3.0.2/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600" rel="stylesheet">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+    <!-- Custom CSS -->
+
+
+    <style>
+        body {
+            background: #f5f5f5;
+        }
+
+        .sidebar {
+            background: #2a3542;
+            padding-top: 15px;
+        }
+
+        .sidebar .widget-menu li {
+            border-bottom: 1px solid #1c252f;
+        }
+
+        .sidebar .widget-menu li a {
+            color: #b1bccb;
+            padding: 15px;
+            display: block;
+            transition: background 0.3s;
+        }
+
+        .sidebar .widget-menu li a:hover,
+        .sidebar .widget-menu li.active a {
+            background: #1c252f;
+            color: #fff;
+        }
+
+        .sidebar .widget-menu li a i {
+            margin-right: 10px;
+        }
+
+        .sidebar .widget-menu li .label {
+            background: #e74c3c;
+            padding: 3px 6px;
+            border-radius: 10px;
+        }
+
+        .content {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 20px;
+        }
+
+        /* Styles for Dashboard Section */
+        #dashboard .btn-controls .btn-box {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+        }
+
+        #dashboard .btn-controls .btn-box:hover {
+            transform: translateY(-3px);
+        }
+
+        #dashboard .btn-controls .btn-box i {
+            font-size: 36px;
+            color: #29b7d3;
+            margin-bottom: 10px;
+        }
+
+        #dashboard .btn-controls .btn-box b {
+            display: block;
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        #dashboard .btn-controls .btn-box p {
+            color: #999;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        #dashboard .btn-controls .small-box {
+            padding: 15px;
+        }
+
+        #dashboard .btn-controls .small-box i {
+            font-size: 24px;
+        }
+
+        #dashboard .btn-controls .small-box p {
+            font-size: 12px;
+        }
+
+        #dashboard .widget-usage li {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 10px 15px;
+            margin-bottom: 10px;
+        }
+
+        #dashboard .widget-usage p {
+            margin: 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        #dashboard .widget-usage .pull-right {
+            font-size: 12px;
+            color: #999;
+        }
+
+        #dashboard .progress.tight {
+            height: 8px;
+            margin-top: 5px;
+        }
+
+        #dashboard .module {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        #dashboard .module-head {
+            padding: 10px 15px;
+            border-bottom: 1px solid #ddd;
+            background: #f5f5f5;
+            border-radius: 8px 8px 0 0;
+        }
+
+        #dashboard .module-head h3 {
+            margin: 0;
+            font-size: 16px;
+            color: #333;
+        }
+
+        #dashboard .module-body {
+            padding: 15px;
+        }
+
+        #dashboard .graph {
+            width: 100%;
+            height: 300px;
+        }
+
+        .chart.inline-legend.grid .graph {
+            height: 500px;
+            /* Updated for Profit Chart */
+        }
+
+        .table-wrapper {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .datatable-1 {
+            width: 100% !important;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 12px;
+            color: #555;
+            table-layout: auto;
+        }
+
+        .datatable-1 th,
+        .datatable-1 td {
+            box-sizing: border-box;
+            white-space: nowrap;
+            text-align: left;
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        .datatable-1 th:first-child,
+        .datatable-1 td:first-child {
+            padding-left: 16px;
+        }
+
+        .datatable-1 td.center {
+            text-align: center;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .wrapper {
+            margin-top: 100px;
+            /* Tạo khoảng cách giữa header và nội dung */
+        }
+
+        .footer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            width: 100%;
+            padding: 10px 0;
+            /* Thêm khoảng cách trên và dưới */
+            background-color: #f5f5f5;
+            /* Màu nền tùy chỉnh */
+            /* position: fixed; */
+            /* Giữ footer ở cuối trang */
+            bottom: 0;
+        }
+
+        .dataTables_wrapper {
+            width: 100%;
+            overflow-x: auto;
+            padding: 0;
+        }
+
+        /* CSS cho phần tìm kiếm và xem mục */
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+
+        }
+
+        .dataTables_wrapper .dataTables_length label,
+        .dataTables_wrapper .dataTables_filter label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0;
+            font-weight: normal;
+            gap: 8px;
+        }
+
+        .dataTables_wrapper .dataTables_filter {
+            float: right;
+        }
+
+        .dataTables_wrapper .dataTables_length select,
+        .dataTables_wrapper .dataTables_filter input {
+            height: 30px;
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 0 8px;
+        }
+
+        .dataTables_wrapper .dataTables_filter input {
+            width: 200px;
+        }
+
+        /* Nút thêm nhân viên */
+        #addEmployeeBtn {
+            margin: 15px 0;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        /* Container cho bảng */
+        .table-container {
+            width: 100%;
+            margin-top: 20px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow-x: hidden;
+        }
+
+        #employeeTable {
+            width: 100% !important;
+        }
+
+        /* CSS cho các cột trong bảng */
+        #employeeTable th,
+        #employeeTable td {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+            /* Giới hạn độ rộng tối đa của cột */
+        }
+
+        /* Responsive cho bảng */
+        @media screen and (max-width: 1200px) {
+            .table-container {
+                padding: 10px;
+            }
+
+            #employeeTable th,
+            #employeeTable td {
+                max-width: 150px;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .table-container {
+                padding: 5px;
+            }
+
+            #employeeTable th,
+            #employeeTable td {
+                max-width: 100px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner" style="padding-top: 10px;">
+            <div class="container" style="padding: 8px;">
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
+                    <i class="icon-reorder shaded"></i>
+                </a>
+                <a class="brand" href="#">HR Dashboard</a>
+                <div class="nav-collapse collapse navbar-inverse-collapse">
+                    <ul class="nav nav-icons">
+                        <li class="active"><a href="javascript:void(0);"><i class="icon-envelope"></i></a></li>
+                        <li><a href="javascript:void(0);"><i class="icon-eye-open"></i></a></li>
+                        <li><a href="javascript:void(0);"><i class="icon-bar-chart"></i></a></li>
+                    </ul>
+                    <form class="navbar-search pull-left input-append" action="javascript:void(0);">
+                        <input type="text" class="span3">
+                        <button class="btn" type="button"><i class="icon-search"></i></button>
+                    </form>
+                    <ul class="nav pull-right">
+                        <li><a href="javascript:void(0);">Welcome: Admin</a></li>
+                        <li class="nav-user dropdown">
+                            <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">
+                                <img src="/static/images/user.png" class="nav-avatar" alt="User Avatar" />
+                                <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="javascript:void(0);">Your Profile</a></li>
+                                <li><a href="javascript:void(0);">Edit Profile</a></li>
+                                <li><a href="javascript:void(0);">Account Settings</a></li>
+                                <li class="divider"></li>
+                                <li><a href="javascript:void(0);">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="wrapper">
+        <div class="container">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="span3">
+                    <div class="sidebar"
+                        style="margin-right: 20px; background: #2d2b32; color: #767676; border-radius: 5px;">
+                        <ul class="widget widget-menu unstyled">
+                            <li class="active">
+                                <a href="javascript:void(0);" data-section="dashboard"><i
+                                        class="menu-icon icon-dashboard"></i>
+                                    Dashboard</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" data-section="detailed-employee"><i
+                                        class="menu-icon icon-bullhorn"></i>
+                                    Detailed Employee</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" data-section="pay-rates"><i
+                                        class="menu-icon icon-inbox"></i> Pay Rates</a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0);" data-section="tasks"><i class="menu-icon icon-tasks"></i>
+                                    Tasks
+                                    <span class="label orange" style="float: right; margin-top: 2px;">19</span>
+                                </a>
+                            </li>
+                        </ul>
+
+                        <ul class="widget widget-menu unstyled">
+                            <li>
+                                <a class="collapsed" data-toggle="collapse" href="javascript:void(0);"
+                                    data-target="#morePages">
+                                    <i class="menu-icon icon-cog"></i> More Pages
+                                    <i class="icon-chevron-down pull-right"></i>
+
+                                </a>
+                                <ul id="morePages" class="collapse unstyled">
+                                    <li><a href="javascript:void(0);">Reports</a></li>
+                                    <li><a href="javascript:void(0);">Settings</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);"><i class="menu-icon icon-signout"></i> Logout</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="span9">
+                    <div class="content">
+                        <!-- Dashboard Section -->
+                        <div id="dashboard" class="content-section active">
+                            <div class="btn-controls">
+                                <div class="btn-box-row row-fluid">
+                                    <div class="btn-box big span4">
+                                        <div class="box-icon">
+                                            <i class="icon-random"></i>
+                                        </div>
+                                        <div class="box-content">
+                                            <div class="box-value">65%</div>
+                                            <div class="box-label">Growth</div>
+                                        </div>
+                                    </div>
+                                    <div class="btn-box big span4">
+                                        <div class="box-icon">
+                                            <i class="icon-user"></i>
+                                        </div>
+                                        <div class="box-content">
+                                            <div class="box-value" id="total-employees-box">0 nhân viên</div>
+                                            <div class="box-label">Users</div>
+                                        </div>
+                                    </div>
+                                    <div class="btn-box big span4">
+                                        <div class="box-icon">
+                                            <i class="icon-money"></i>
+                                        </div>
+                                        <div class="box-content">
+                                            <div class="box-value" id="total-pay-rate-box">Tổng lương: $0.00</div>
+                                            <div class="box-label">Profit</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="btn-box-row row-fluid">
+                                    <div class="span8">
+                                        <div class="row-fluid">
+                                            <div class="span12">
+                                                <a href="#" class="btn-box small span4 small-box">
+                                                    <i class="icon-envelope"></i>
+                                                    <p>Messages</p>
+                                                </a>
+                                                <a href="#" class="btn-box small span4 small-box">
+                                                    <i class="icon-group"></i>
+                                                    <p>Clients</p>
+                                                </a>
+                                                <a href="#" class="btn-box small span4 small-box">
+                                                    <i class="icon-exchange"></i>
+                                                    <p>Expenses</p>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="row-fluid">
+                                            <div class="span12">
+                                                <a href="#" class="btn-box small span4 small-box">
+                                                    <i class="icon-save"></i>
+                                                    <p>Total Sales</p>
+                                                </a>
+                                                <a href="#" class="btn-box small span4 small-box">
+                                                    <i class="icon-bullhorn"></i>
+                                                    <p>Social Feed</p>
+                                                </a>
+                                                <a href="#" class="btn-box small span4 small-box">
+                                                    <i class="icon-sort-down"></i>
+                                                    <p>Bounce Rate</p>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <ul class="widget widget-usage unstyled span4">
+                                        <li>
+                                            <p><strong>Windows 8</strong> <span
+                                                    class="pull-right small muted">78%</span></p>
+                                            <div class="progress tight">
+                                                <div class="bar bar-primary" style="width: 78%;"></div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <p><strong>Mac</strong> <span class="pull-right small muted">56%</span></p>
+                                            <div class="progress tight">
+                                                <div class="bar bar-success" style="width: 56%;"></div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <p><strong>Linux</strong> <span class="pull-right small muted">44%</span>
+                                            </p>
+                                            <div class="progress tight">
+                                                <div class="bar bar-warning" style="width: 44%;"></div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <p><strong>iPhone</strong> <span class="pull-right small muted">67%</span>
+                                            </p>
+                                            <div class="progress tight">
+                                                <div class="bar bar-danger" style="width: 67%;"></div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Profit Chart -->
+                            <div class="module">
+                                <div class="module-head">
+                                    <h3>Profit Chart</h3>
+                                </div>
+                                <div class="module-body">
+                                    <div class="chart inline-legend grid">
+                                        <div id="profitChart" class="graph"
+                                            style="height: 500px; padding: 0px; position: relative;"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cache Stats -->
+                            <div class="module">
+                                <div class="module-head">
+                                    <h3>Cache Statistics</h3>
+                                </div>
+                                <div class="module-body">
+                                    <div id="cache-stats">
+                                        <p>Loading cache statistics...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Detailed Employee Section -->
+                        <div id="detailed-employee" class="content-section">
+                            <div class="module">
+                                <div class="module-head">
+                                    <h3>Employee Overview</h3>
+                                    <button id="addEmployeeBtn" class="btn btn-primary pull-right"
+                                        style="margin-top: -25px;">
+                                        <i class="icon-plus"></i> Thêm nhân viên
+                                    </button>
+                                </div>
+                                <div class="module-body">
+                                    <!-- Form thêm nhân viên -->
+                                    <div id="addEmployeeForm" style="display: none; margin-bottom: 20px;">
+                                        <form id="employeeForm" class="form-horizontal">
+                                            <div class="row-fluid">
+                                                <div class="span6">
+                                                    <!-- Thông tin chung -->
+                                                    <div class="control-group">
+                                                        <label class="control-label">Mã nhân viên</label>
+                                                        <div class="controls">
+                                                            <input type="text" id="employeeNumber" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="control-group">
+                                                        <label class="control-label">Họ</label>
+                                                        <div class="controls">
+                                                            <input type="text" id="lastName" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="control-group">
+                                                        <label class="control-label">Tên</label>
+                                                        <div class="controls">
+                                                            <input type="text" id="firstName" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="control-group">
+                                                        <label class="control-label">Email</label>
+                                                        <div class="controls">
+                                                            <input type="email" id="email" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="control-group">
+                                                        <label class="control-label">Số điện thoại</label>
+                                                        <div class="controls">
+                                                            <input type="tel" id="phoneNumber" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="control-group">
+                                                        <label class="control-label">SSN</label>
+                                                        <div class="controls">
+                                                            <input type="text" id="ssn" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="span6">
+                                                    <!-- Thông tin bổ sung -->
+                                                    <div class="control-group">
+                                                        <label class="control-label">Địa chỉ</label>
+                                                        <div class="controls">
+                                                            <input type="text" id="address" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="control-group">
+                                                        <label class="control-label">Thành phố</label>
+                                                        <div class="controls">
+                                                            <input type="text" id="city" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="control-group">
+                                                        <label class="control-label">Tiểu bang</label>
+                                                        <div class="controls">
+                                                            <input type="text" id="state" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="control-group">
+                                                        <label class="control-label">Mã ZIP</label>
+                                                        <div class="controls">
+                                                            <input type="text" id="zip" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="control-group">
+                                                        <label class="control-label">Giới tính</label>
+                                                        <div class="controls">
+                                                            <select id="gender" required>
+                                                                <option value="true">Nam</option>
+                                                                <option value="false">Nữ</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="control-group">
+                                                        <label class="control-label">Cổ đông</label>
+                                                        <div class="controls">
+                                                            <select id="shareholder" required>
+                                                                <option value="true">Có</option>
+                                                                <option value="false">Không</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row-fluid">
+                                                <div class="span12">
+                                                    <!-- Thông tin lương và phúc lợi -->
+                                                    <div class="control-group">
+                                                        <label class="control-label">Mức lương</label>
+                                                        <div class="controls">
+                                                            <input type="number" id="payRate" step="0.01" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="control-group">
+                                                        <label class="control-label">Số ngày nghỉ</label>
+                                                        <div class="controls">
+                                                            <input type="number" id="vacationDays" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="control-group">
+                                                        <label class="control-label">Kế hoạch phúc lợi</label>
+                                                        <div class="controls">
+                                                            <input type="number" id="benefitPlans" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="control-group">
+                                                        <label class="control-label">Dân tộc</label>
+                                                        <div class="controls">
+                                                            <input type="number" id="ethnicity" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-actions">
+                                                <button type="submit" class="btn btn-primary">Lưu</button>
+                                                <button type="button" id="cancelAdd" class="btn">Hủy</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="table-container">
+                                        <table id="employeeTable" class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Full Name</th>
+                                                    <th>City</th>
+                                                    <th>Email</th>
+                                                    <th>Phone Number</th>
+                                                    <th>Gender</th>
+                                                    <th>SSN</th>
+                                                    <th>Payrate</th>
+                                                    <th>Vacation</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="employee-table-body">
+                                                <!-- Rows will be dynamically added here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Pay Rates Section (Placeholder) -->
+                        <div id="pay-rates" class="content-section">
+                            <div class="module">
+                                <div class="module-head">
+                                    <h3>Pay Rates</h3>
+                                </div>
+                                <div class="module-body">
+                                    <p>Pay rates content goes here.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tasks Section (Placeholder) -->
+                        <div id="tasks" class="content-section">
+                            <div class="module">
+                                <div class="module-head">
+                                    <h3>Tasks</h3>
+                                </div>
+                                <div class="module-body">
+                                    <p>Tasks content goes here.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="container">
+            <b class="copyright">© 2025 HR Dashboard - xAI </b>All rights reserved.
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.2.2/bootstrap.min.js"></script>
+    <!-- DataTables JS -->
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <!-- Flot Charts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.area.min.js"></script>
+    <!-- Socket.IO -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
+    <!-- Custom JS -->
+
+    <script>
+        var socket = io();
+
+        // Debug log
+        var initialData = JSON.parse('{{ initial_data|tojson|safe }}');
+        console.log('Initial data:', initialData);
+
+        // Khởi tạo DataTable
+        $(document).ready(function () {
+            console.log('Initializing DataTable...');
+
+            // Hàm cập nhật thống kê
+            function updateStats(data) {
+                var totalEmployees = data.length;
+                var totalPayRate = data.reduce(function (sum, row) {
+                    return sum + (parseFloat(row.payRate) || 0);
+                }, 0);
+
+                // Cập nhật box thống kê
+                $('#total-employees-box').text(totalEmployees + ' nhân viên');
+                $('#total-pay-rate-box').text('Tổng lương: $' + totalPayRate.toFixed(2));
+
+                console.log('Stats updated:', { totalEmployees, totalPayRate });
+            }
+
+            var table = $('#employeeTable').DataTable({
+                data: initialData.merged_data,
+                columns: [
+                    { data: 'fullName', title: 'Full Name' },
+                    { data: 'city', title: 'City' },
+                    { data: 'email', title: 'Email' },
+                    { data: 'phoneNumber', title: 'Phone Number' },
+                    { data: 'gender', title: 'Gender' },
+                    { data: 'ssn', title: 'SSN' },
+                    { data: 'payRate', title: 'Payrate' },
+                    { data: 'vacationDays', title: 'Vacation' },
+                    {
+                        data: 'status',
+                        title: 'Actions',
+                        render: function (data, type, row) {
+                            return `
+                                <button class="btn btn-primary btn-small" onclick="editEmployee('${row.employeeNumber}')">
+                                    <i class="icon-edit"></i> Sửa
+                                </button>
+                                <button class="btn btn-danger btn-small" onclick="deleteEmployee('${row.employeeNumber}')">
+                                    <i class="icon-trash"></i> Xóa
+                                </button>
+                            `;
+                        }
+                    }
+                ],
+                pageLength: 10,
+                responsive: true,
+                language: {
+                    "sProcessing": "Đang xử lý...",
+                    "sLengthMenu": "Xem mục _MENU_ ",
+                    "sZeroRecords": "Không tìm thấy dòng nào phù hợp",
+                    "sInfo": "Đang xem _START_ đến _END_ trong tổng số _TOTAL_ mục",
+                    "sInfoEmpty": "Đang xem 0 đến 0 trong tổng số 0 mục",
+                    "sInfoFiltered": "(được lọc từ _MAX_ mục)",
+                    "sInfoPostFix": "",
+                    "sSearch": "Tìm:",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "Đầu",
+                        "sPrevious": "Trước",
+                        "sNext": "Tiếp",
+                        "sLast": "Cuối"
+                    }
+                },
+                initComplete: function () {
+                    // Cập nhật thống kê khi bảng được khởi tạo
+                    updateStats(initialData.merged_data);
+                }
+            });
+
+            // Cập nhật thống kê khi dữ liệu thay đổi
+            socket.on('data_updated', function (newData) {
+                console.log('Received new data via SocketIO:', newData); // Log dữ liệu nhận được
+                if (newData && newData.merged_data) {
+                    console.log('Updating DataTable with:', newData.merged_data);
+                    table.clear().rows.add(newData.merged_data).draw();
+
+                    // Cập nhật thống kê
+                    if (newData.stats) {
+                        $('#total-employees-box').text(newData.stats.total_employees + ' nhân viên');
+                        $('#total-pay-rate-box').text('Tổng lương: $' + parseFloat(newData.stats.total_pay_rate).toFixed(2));
+                    } else {
+                        updateStats(newData.merged_data);
+                    }
+                } else {
+                    console.error('Invalid data received via SocketIO:', newData);
+                }
+            });
+        });
+
+        // Client-side routing
+        $('.widget-menu a[data-section]').on('click', function (e) {
+            e.preventDefault();
+            var targetSection = $(this).data('section');
+            $('.content-section').removeClass('active');
+            $('#' + targetSection).addClass('active');
+            $('.widget-menu li').removeClass('active');
+            $(this).parent().addClass('active');
+
+            // Redraw table khi chuyển đến tab employee
+            if (targetSection === 'detailed-employee') {
+                $('#employeeTable').DataTable().draw();
+            }
+        });
+
+        // Vẽ biểu đồ lợi nhuận
+        var profitData = [
+            [0, 1], [1, 14], [2, 10], [3, 6], [4, 8], [5, 5], [6, 14], [7, 9], [8, 7]
+        ];
+        var expenseData = [
+            [0, 0], [1, 8], [2, 9], [3, 2], [4, 6], [5, 4], [6, 10], [7, 8], [8, 6]
+        ];
+
+        var dataset = [
+            {
+                label: "Profits",
+                data: profitData,
+                color: "rgb(85,243,192)",
+                points: { show: true, radius: 3, fillColor: "rgb(85,243,192)" },
+                lines: { show: true, fill: true, fillColor: { colors: [{ opacity: 0.5 }, { opacity: 0.1 }] } }
+            },
+            {
+                label: "Expenses",
+                data: expenseData,
+                color: "rgb(13,179,126)",
+                points: { show: true, radius: 3, fillColor: "rgb(13,179,126)" },
+                lines: { show: true, fill: true, fillColor: { colors: [{ opacity: 0.5 }, { opacity: 0.1 }] } }
+            }
+        ];
+
+        if ($('#profitChart').length > 0) {
+            $.plot("#profitChart", dataset, {
+                series: {
+                    lines: { show: true },
+                    points: { show: true }
+                },
+                grid: {
+                    hoverable: true,
+                    clickable: true,
+                    borderWidth: 0,
+                    backgroundColor: "#fff",
+                    tickColor: "#ddd"
+                },
+                xaxis: {
+                    min: 0,
+                    max: 8,
+                    tickSize: 1,
+                    font: {
+                        size: 11,
+                        color: "#545454"
+                    }
+                },
+                yaxis: {
+                    min: 0,
+                    max: 16,
+                    tickSize: 2,
+                    font: {
+                        size: 11,
+                        color: "#545454"
+                    }
+                },
+                legend: {
+                    position: "ne",
+                    backgroundColor: "rgb(255, 255, 255)",
+                    backgroundOpacity: 0.85,
+                    labelBoxBorderColor: "#ccc",
+                    margin: [10, 10]
+                }
+            });
+        }
+
+        // Function to update cache stats
+        function updateCacheStats() {
+            console.log('Updating cache stats...');
+            fetch('/cache/stats')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Cache stats:', data);
+                    const cacheStatsElement = document.getElementById('cache-stats');
+                    if (cacheStatsElement) {
+                        const cacheStatsHtml = `
+                            <p><strong>Total Cache Keys:</strong> ${data.total_keys}</p>
+                            <p><strong>Cache TTL:</strong> ${data.ttl} seconds</p>
+                            <p><strong>Cache Keys:</strong> ${data.keys.join(', ')}</p>
+                        `;
+                        cacheStatsElement.innerHTML = cacheStatsHtml;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching cache stats:', error);
+                });
+        }
+
+        // Hàm poll trạng thái
+        function pollStatus(trackingId) {
+            var pollInterval = setInterval(function () {
+                $.get('/api/employee/status/' + trackingId, function (response) {
+                    if (response.processing_status) {
+                        // Cập nhật trạng thái API 1
+                        updateServiceStatus('api1', response.processing_status.api1);
+                        // Cập nhật trạng thái API 2
+                        updateServiceStatus('api2', response.processing_status.api2);
+
+                        // Kiểm tra nếu cả 2 API đều hoàn thành
+                        if (response.processing_status.api1.status === 'SUCCESS' &&
+                            response.processing_status.api2.status === 'SUCCESS') {
+                            clearInterval(pollInterval);
+                            setTimeout(function () {
+                                $('#creationStatus').slideUp();
+                            }, 5000);
+                        }
+
+                        // Nếu có lỗi không thể khắc phục
+                        if (response.processing_status.api1.status === 'FAILED' &&
+                            response.processing_status.api2.status === 'FAILED') {
+                            clearInterval(pollInterval);
+                        }
+                    }
+                });
+            }, 2000); // Poll mỗi 2 giây
+        }
+
+        // Hàm cập nhật trạng thái service
+        function updateServiceStatus(service, status) {
+            var row = $('#' + service + 'Status');
+            row.find('.status').text(getStatusText(status.status));
+            row.find('.time').text(status.completed_at || status.last_retry || '-');
+            row.find('.error').text(status.error || '-');
+
+            // Cập nhật màu sắc theo trạng thái
+            row.removeClass('success error warning');
+            if (status.status === 'SUCCESS') {
+                row.addClass('success');
+            } else if (status.status === 'FAILED') {
+                row.addClass('error');
+            } else if (status.status === 'PENDING') {
+                row.addClass('warning');
+            }
+        }
+
+        // Hàm chuyển đổi trạng thái sang tiếng Việt
+        function getStatusText(status) {
+            switch (status) {
+                case 'PENDING': return 'Đang chờ';
+                case 'SUCCESS': return 'Thành công';
+                case 'FAILED': return 'Thất bại';
+                default: return status;
+            }
+        }
+
+        // Xử lý modal chỉnh sửa nhân viên
+        function editEmployee(employeeId) {
+            // Hiển thị modal
+            $('#editEmployeeModal').modal('show');
+        }
+
+        // Xử lý sự kiện submit form chỉnh sửa
+        $('#submitEditEmployee').click(function () {
+            // Đóng modal
+            $('#editEmployeeModal').modal('hide');
+            alert('Chức năng cập nhật đang được phát triển!');
+        });
+
+        // Xử lý modal xóa nhân viên
+        function deleteEmployee(employeeId) {
+            // Lưu ID nhân viên vào modal để sử dụng khi xác nhận
+            $('#deleteEmployeeModal').data('employeeId', employeeId);
+            // Hiển thị modal
+            $('#deleteEmployeeModal').modal('show');
+        }
+
+        // Xử lý sự kiện xác nhận xóa
+        $('#confirmDeleteEmployee').click(function () {
+            // Đóng modal
+            $('#deleteEmployeeModal').modal('hide');
+            alert('Chức năng xóa đang được phát triển!');
+        });
+    </script>
+
+    <!-- Include modal tạo nhân viên -->
+    {% include 'create_employee_modal.html' %}
+
+    <!-- Modal chỉnh sửa nhân viên -->
+    <div class="modal fade" id="editEmployeeModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="display: flex; justify-content: center; align-items: center;">
+                    <h2>Sửa Nhân Viên</h2>
+                </div>
+                <div class="modal-body">
+                    <form id="editEmployeeForm">
+                        <div class="row-fluid">
+                            <div class="span6">
+                                <div class="control-group">
+                                    <label>Họ:</label>
+                                    <div class="controls">
+                                        <input type="text" name="lastName" required>
+                                    </div>
+                                </div>
+
+                                <div class="control-group">
+                                    <label>Tên:</label>
+                                    <div class="controls">
+                                        <input type="text" name="firstName" required>
+                                    </div>
+                                </div>
+
+                                <div class="control-group">
+                                    <label>Email:</label>
+                                    <div class="controls">
+                                        <input type="email" name="email" required>
+                                    </div>
+                                </div>
+
+                                <div class="control-group">
+                                    <label>Số điện thoại:</label>
+                                    <div class="controls">
+                                        <input type="tel" name="phoneNumber" required>
+                                    </div>
+                                </div>
+
+                                <div class="control-group">
+                                    <label>Thành phố:</label>
+                                    <div class="controls">
+                                        <input type="text" name="city" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="span6">
+                                <div class="control-group">
+                                    <label>SSN:</label>
+                                    <div class="controls">
+                                        <input type="text" name="ssn" required>
+                                    </div>
+                                </div>
+
+                                <div class="control-group">
+                                    <label>Mức lương:</label>
+                                    <div class="controls">
+                                        <input type="number" name="payRate" required>
+                                    </div>
+                                </div>
+
+                                <div class="control-group">
+                                    <label>Số ngày nghỉ:</label>
+                                    <div class="controls">
+                                        <input type="number" name="vacationDays" required>
+                                    </div>
+                                </div>
+
+                                <div class="control-group">
+                                    <label>Giới tính:</label>
+                                    <div class="controls">
+                                        <select name="gender" required>
+                                            <option value="true">Nam</option>
+                                            <option value="false">Nữ</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" id="submitEditEmployee">Lưu thay đổi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Xử lý sự kiện khi nhấn nút thêm nhân viên
+        $('#addEmployeeBtn').click(function () {
+            $('#createEmployeeModal').modal('show');
+        });
+
+        // Xử lý sự kiện submit form tạo nhân viên
+        $('#submitCreateEmployee').click(function () {
+            const formData = {};
+            $('#createEmployeeForm').serializeArray().forEach(item => {
+                formData[item.name] = item.value;
+            });
+
+            // Gửi request tạo nhân viên
+            $.ajax({
+                url: '/api/employee/create',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                success: function (response) {
+                    if (response.tracking_id) {
+                        // Hiển thị thông báo thành công
+                        alert('Đã gửi yêu cầu tạo nhân viên thành công!');
+                        // Đóng modal
+                        $('#createEmployeeModal').modal('hide');
+                        // Reset form
+                        $('#createEmployeeForm')[0].reset();
+                        // Bắt đầu theo dõi trạng thái
+                        pollStatus(response.tracking_id);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert('Có lỗi xảy ra khi tạo nhân viên: ' + error);
+                }
+            });
+        });
+    </script>
+
+    <!-- Modal xác nhận xóa nhân viên -->
+    <div class="modal fade" id="deleteEmployeeModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="display: flex; justify-content: center; align-items: center;">
+                    <h2>Xác nhận xóa</h2>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn xóa nhân viên này không?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" data-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteEmployee">Xóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

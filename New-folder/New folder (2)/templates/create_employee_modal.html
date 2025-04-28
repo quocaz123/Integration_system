@@ -1,0 +1,222 @@
+<!-- Modal tạo nhân viên -->
+<div class="modal fade" id="createEmployeeModal" tabindex="-1" role="dialog" aria-labelledby="createEmployeeModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createEmployeeModalLabel">Tạo nhân viên mới</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="createEmployeeForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="firstName">Tên</label>
+                                <input type="text" class="form-control" id="firstName" name="firstName" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="lastName">Họ</label>
+                                <input type="text" class="form-control" id="lastName" name="lastName" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="phoneNumber">Số điện thoại</label>
+                                <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="address">Địa chỉ</label>
+                                <input type="text" class="form-control" id="address" name="address" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="city">Thành phố</label>
+                                <input type="text" class="form-control" id="city" name="city" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="state">Tỉnh/Thành</label>
+                                <input type="text" class="form-control" id="state" name="state" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="zip">Mã bưu điện</label>
+                                <input type="text" class="form-control" id="zip" name="zip" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="ssn">SSN</label>
+                                <input type="text" class="form-control" id="ssn" name="ssn" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="gender">Giới tính</label>
+                                <select class="form-control" id="gender" name="gender" required>
+                                    <option value="true">Nam</option>
+                                    <option value="false">Nữ</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="payRate">Lương cơ bản</label>
+                                <input type="number" class="form-control" id="payRate" name="payRate" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="vacationDays">Số ngày nghỉ phép</label>
+                                <input type="number" class="form-control" id="vacationDays" name="vacationDays"
+                                    required>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" id="submitEmployee">Tạo nhân viên</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal hiển thị trạng thái -->
+<div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="statusModalLabel">Trạng thái tạo nhân viên</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="statusContent">
+                    <div class="alert alert-info">
+                        Đang xử lý yêu cầu...
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // Xử lý sự kiện submit form
+        $('#submitEmployee').click(function () {
+            const formData = {};
+            $('#createEmployeeForm').serializeArray().forEach(function (item) {
+                formData[item.name] = item.value;
+            });
+
+            // Hiển thị modal trạng thái
+            $('#statusModal').modal('show');
+            $('#statusContent').html('<div class="alert alert-info">Đang xử lý yêu cầu...</div>');
+
+            // Gửi request tạo nhân viên
+            $.ajax({
+                url: '/api/employee/create',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                success: function (response) {
+                    if (response.success) {
+                        $('#statusContent').html(`
+                        <div class="alert alert-success">
+                            <h5>Yêu cầu đã được gửi thành công!</h5>
+                            <p>ID theo dõi: ${response.tracking_id}</p>
+                            <p>Vui lòng đợi trong giây lát...</p>
+                        </div>
+                    `);
+
+                        // Bắt đầu kiểm tra trạng thái
+                        checkStatus(response.tracking_id);
+                    } else {
+                        $('#statusContent').html(`
+                        <div class="alert alert-danger">
+                            <h5>Lỗi!</h5>
+                            <p>${response.message}</p>
+                        </div>
+                    `);
+                    }
+                },
+                error: function (xhr) {
+                    $('#statusContent').html(`
+                    <div class="alert alert-danger">
+                        <h5>Lỗi!</h5>
+                        <p>${xhr.responseJSON?.message || 'Có lỗi xảy ra khi tạo nhân viên'}</p>
+                    </div>
+                `);
+                }
+            });
+        });
+
+        // Hàm kiểm tra trạng thái
+        function checkStatus(trackingId) {
+            const checkInterval = setInterval(function () {
+                $.get(`/api/employee/status/${trackingId}`, function (status) {
+                    if (status.status === 'SUCCESS') {
+                        clearInterval(checkInterval);
+                        $('#statusContent').html(`
+                        <div class="alert alert-success">
+                            <h5>Thành công!</h5>
+                            <p>Nhân viên đã được tạo thành công.</p>
+                        </div>
+                    `);
+                        // Đóng modal tạo nhân viên
+                        $('#createEmployeeModal').modal('hide');
+                        // Refresh dữ liệu
+                        location.reload();
+                    } else if (status.status === 'FAILED') {
+                        clearInterval(checkInterval);
+                        $('#statusContent').html(`
+                        <div class="alert alert-danger">
+                            <h5>Thất bại!</h5>
+                            <p>${status.error || 'Có lỗi xảy ra khi tạo nhân viên'}</p>
+                        </div>
+                    `);
+                    }
+                });
+            }, 2000); // Kiểm tra mỗi 2 giây
+        }
+    });
+</script>

@@ -1,0 +1,128 @@
+<!-- Đảm bảo có jQuery và Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+
+<!-- Thêm nút sửa vào table -->
+<button type="button" class="btn btn-primary btn-edit">
+    <i class="icon-edit"></i> Sửa
+</button>
+
+<!-- Modal sửa nhân viên -->
+<div class="modal fade" id="editEmployeeModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="display: flex; justify-content: center; align-items: center;">
+                <h2>Sửa Nhân Viên</h2>
+            </div>
+            <div class="modal-body">
+                <form id="editEmployeeForm">
+                    <div class="row-fluid">
+                        <div class="span6">
+                            <div class="control-group">
+                                <label>Họ:</label>
+                                <div class="controls">
+                                    <input type="text" name="lastName" required>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label>Tên:</label>
+                                <div class="controls">
+                                    <input type="text" name="firstName" required>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label>Email:</label>
+                                <div class="controls">
+                                    <input type="email" name="email" required>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label>Số điện thoại:</label>
+                                <div class="controls">
+                                    <input type="tel" name="phoneNumber" required>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label>Thành phố:</label>
+                                <div class="controls">
+                                    <input type="text" name="city" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="span6">
+                            <div class="control-group">
+                                <label>SSN:</label>
+                                <div class="controls">
+                                    <input type="text" name="ssn" required>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label>Mức lương:</label>
+                                <div class="controls">
+                                    <input type="number" name="payRate" required>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label>Số ngày nghỉ:</label>
+                                <div class="controls">
+                                    <input type="number" name="vacationDays" required>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label>Giới tính:</label>
+                                <div class="controls">
+                                    <select name="gender" required>
+                                        <option value="true">Nam</option>
+                                        <option value="false">Nữ</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" data-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" id="submitEditEmployee">Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script xử lý -->
+<script>
+    $(document).ready(function () {
+        // Xử lý nút sửa
+        $('.btn-edit').click(function (e) {
+            e.preventDefault();
+            $('#editEmployeeModal').modal('show');
+        });
+
+        // Xử lý nút đóng modal
+        $('#editEmployeeModal .btn[data-dismiss="modal"]').click(function () {
+            $('#editEmployeeModal').modal('hide');
+        });
+
+        // Đóng modal khi click bên ngoài
+        $(document).on('click', function (e) {
+            if ($(e.target).is('#editEmployeeModal')) {
+                $('#editEmployeeModal').modal('hide');
+            }
+        });
+
+        // Đóng modal khi nhấn ESC
+        $(document).keyup(function (e) {
+            if (e.key === "Escape") {
+                $('#editEmployeeModal').modal('hide');
+            }
+        });
+    });
+</script>

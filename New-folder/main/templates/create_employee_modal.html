@@ -1,0 +1,148 @@
+<!-- Modal tạo nhân viên mới với bố cục giống modal sửa, không có trường mã nhân viên -->
+<div class="modal fade" id="createEmployeeModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="display: flex; justify-content: center; align-items: center;">
+                <h2>Tạo Nhân Viên Mới</h2>
+            </div>
+            <div class="modal-body">
+                <form id="createEmployeeForm">
+                    <div class="row-fluid">
+                        <div class="span6">
+                            <div class="control-group">
+                                <label for="lastName">Họ:</label>
+                                <div class="controls">
+                                    <input type="text" id="lastName" name="lastName" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="firstName">Tên:</label>
+                                <div class="controls">
+                                    <input type="text" id="firstName" name="firstName" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="email">Email:</label>
+                                <div class="controls">
+                                    <input type="email" id="email" name="email" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="phoneNumber">Số điện thoại:</label>
+                                <div class="controls">
+                                    <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="city">Thành phố:</label>
+                                <div class="controls">
+                                    <input type="text" id="city" name="city" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="span6">
+                            <div class="control-group">
+                                <label for="ssn">SSN:</label>
+                                <div class="controls">
+                                    <input type="text" id="ssn" name="ssn" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="payRate">Mức lương:</label>
+                                <div class="controls">
+                                    <input type="number" id="payRate" name="payRate" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="vacationDays">Số ngày nghỉ:</label>
+                                <div class="controls">
+                                    <input type="number" id="vacationDays" name="vacationDays" class="form-control"
+                                        required>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="gender">Giới tính:</label>
+                                <div class="controls">
+                                    <select id="gender" name="gender" class="form-control" required>
+                                        <option value="true">Nam</option>
+                                        <option value="false">Nữ</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" id="submitEmployee">Tạo nhân viên</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // Xử lý sự kiện click nút tạo nhân viên
+        $('#submitEmployee').click(function () {
+            console.log('clicked');
+            const formData = {};
+            $('#createEmployeeForm').serializeArray().forEach(item => {
+                formData[item.name] = item.value;
+            });
+            console.log('formData:', formData);
+
+            $.ajax({
+                url: '/api/employee/create',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                success: function (response) {
+                    console.log('response:', response);
+                    if (response.success) {
+                        alert('Đã gửi yêu cầu tạo nhân viên thành công!');
+                        $('#createEmployeeModal').modal('hide');
+                        $('#createEmployeeForm')[0].reset();
+                        if ($('#yourTableId').length) {
+                            $('#yourTableId').DataTable().ajax.reload();
+                        }
+                        socket.on('data_updated', function (data) {
+                            // Cập nhật lại bảng ở đây
+                        });
+                    } else {
+                        alert('Tạo nhân viên thất bại!');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log('error:', xhr, status, error);
+                    alert('Có lỗi xảy ra khi tạo nhân viên: ' + error);
+                }
+            });
+        });
+
+        // Xử lý sự kiện khi modal được mở
+        $('#createEmployeeModal').on('shown.bs.modal', function () {
+            // Reset form khi modal được mở
+            $('#createEmployeeForm')[0].reset();
+            // Focus vào input đầu tiên
+            $('#lastName').focus();
+        });
+
+        // Đảm bảo chỉ 1 modal được mở
+        $('.modal').modal('hide');
+
+    });
+</script>
+
+<style>
+    #createEmployeeModal .modal-body {
+        opacity: 1 !important;
+        background: #fff !important;
+        pointer-events: auto !important;
+    }
+
+    #createEmployeeModal .modal-content {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+    }
+</style>
