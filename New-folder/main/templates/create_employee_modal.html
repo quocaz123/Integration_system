@@ -25,12 +25,17 @@
                                 <label for="email">Email:</label>
                                 <div class="controls">
                                     <input type="email" id="email" name="email" class="form-control" required>
+                                    <small id="email-exists-msg" style="color: red; display: none;">Email đã tồn
+                                        tại!</small>
                                 </div>
                             </div>
                             <div class="control-group">
                                 <label for="phoneNumber">Số điện thoại:</label>
                                 <div class="controls">
-                                    <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" required>
+                                    <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control"
+                                        maxlength="10" required>
+                                    <small id="phone-msg" style="color: red; display: none;">Số điện thoại phải là 10
+                                        số!</small>
                                 </div>
                             </div>
                             <div class="control-group">
@@ -44,7 +49,8 @@
                             <div class="control-group">
                                 <label for="ssn">SSN:</label>
                                 <div class="controls">
-                                    <input type="text" id="ssn" name="ssn" class="form-control" required>
+                                    <input type="text" id="ssn" name="ssn" class="form-control" maxlength="5" required>
+                                    <small id="ssn-msg" style="color: red; display: none;">SSN phải là 5 số!</small>
                                 </div>
                             </div>
                             <div class="control-group">
@@ -83,22 +89,69 @@
 
 <script>
     $(document).ready(function () {
+        // Kiểm tra email tồn tại khi blur khỏi input
+        $('#email').on('blur', function () {
+            var email = $(this).val();
+            if (email) {
+                $.get('/api/employee/check-email', { email: email }, function (res) {
+                    if (res.exists) {
+                        $('#email-exists-msg').show();
+                        checkFormValidity();
+                    } else {
+                        $('#email-exists-msg').hide();
+                        checkFormValidity();
+                    }
+                });
+            } else {
+                $('#email-exists-msg').hide();
+                checkFormValidity();
+            }
+        });
+
+        function checkFormValidity() {
+            if ($('#phone-msg').is(':hidden') && $('#ssn-msg').is(':hidden') && $('#email-exists-msg').is(':hidden')) {
+                $('#submitEmployee').prop('disabled', false);
+            } else {
+                $('#submitEmployee').prop('disabled', true);
+            }
+        }
+
+        // Validation số điện thoại
+        $(document).on('input', '#phoneNumber', function () {
+            var val = $(this).val();
+            var isValid = /^\d{10}$/.test(val);
+            if (!isValid && val.length > 0) {
+                $('#phone-msg').show();
+            } else {
+                $('#phone-msg').hide();
+            }
+            checkFormValidity();
+        });
+
+        // Validation SSN
+        $(document).on('input', '#ssn', function () {
+            var val = $(this).val();
+            var isValid = /^\d{5}$/.test(val);
+            if (!isValid && val.length > 0) {
+                $('#ssn-msg').show();
+            } else {
+                $('#ssn-msg').hide();
+            }
+            checkFormValidity();
+        });
+
         // Xử lý sự kiện click nút tạo nhân viên
         $('#submitEmployee').click(function () {
-            console.log('clicked');
             const formData = {};
             $('#createEmployeeForm').serializeArray().forEach(item => {
                 formData[item.name] = item.value;
             });
-            console.log('formData:', formData);
-
             $.ajax({
                 url: '/api/employee/create',
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(formData),
                 success: function (response) {
-                    console.log('response:', response);
                     if (response.success) {
                         alert('Đã gửi yêu cầu tạo nhân viên thành công!');
                         $('#createEmployeeModal').modal('hide');
@@ -114,7 +167,6 @@
                     }
                 },
                 error: function (xhr, status, error) {
-                    console.log('error:', xhr, status, error);
                     alert('Có lỗi xảy ra khi tạo nhân viên: ' + error);
                 }
             });
@@ -122,15 +174,18 @@
 
         // Xử lý sự kiện khi modal được mở
         $('#createEmployeeModal').on('shown.bs.modal', function () {
-            // Reset form khi modal được mở
             $('#createEmployeeForm')[0].reset();
-            // Focus vào input đầu tiên
             $('#lastName').focus();
+            $('#email-exists-msg').hide();
+            $('#phone-msg').hide();
+            $('#ssn-msg').hide();
+            $('#submitEmployee').prop('disabled', false);
         });
 
         // Đảm bảo chỉ 1 modal được mở
         $('.modal').modal('hide');
 
+        //$(document).on('input', '#phoneNumber', function () { alert('ok'); });
     });
 </script>
 

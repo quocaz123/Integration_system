@@ -183,6 +183,15 @@ def update_employee():
             "message": str(e)
         }), 500
 
+@app.route('/api/employee/check-email')
+def check_email():
+    email = request.args.get('email', '').strip().lower()
+    # Lấy danh sách nhân viên từ Redis hoặc DB
+    merged_data_json = redis_service.client.get('merged_employee_list')
+    merged_data = json.loads(merged_data_json) if merged_data_json else []
+    exists = any(e.get('email', '').strip().lower() == email for e in merged_data)
+    return jsonify({'exists': exists})
+
 if __name__ == '__main__':
     logger.info("Khởi động ứng dụng") 
     start_consumers()

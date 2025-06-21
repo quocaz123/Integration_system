@@ -708,4 +708,72 @@ class EmployeeService:
             except (ValueError, TypeError):
                 return False, f"Trường {field} phải là số"
 
-        return True, "Dữ liệu hợp lệ" 
+        return True, "Dữ liệu hợp lệ"
+
+    def update_employee(self, employee_data: Dict[str, Any]) -> Dict[str, Any]:
+        result = {
+            'api1_status': 'PENDING',
+            'api2_status': 'PENDING',
+            'api1_error': None,
+            'api2_error': None
+        }
+
+        api1_data = self.transform_for_api1(employee_data)
+        api2_data = self.transform_for_api2(employee_data)
+        employee_number = str(employee_data.get('employeeNumber', '') or '')
+        id_employee = str(employee_data.get('idEmployee', '') or '')
+
+        # Gọi API1 nếu có employeeNumber
+        if employee_number and employee_number.lower() != 'n/a':
+            try:
+                api1_url = f"{Config.API1_URL}/UpdateEmployee/{employee_number}"
+                logger.info(f"[UPDATE][API1] URL: {api1_url}")
+                logger.info(f"[UPDATE][API1] employeeNumber: {employee_number}")
+                logger.info(f"[UPDATE][API1] Data: {json.dumps(api1_data, ensure_ascii=False)}")
+                api1_response = requests.put(api1_url, json=api1_data, timeout=5)
+                logger.info(f"API1 Response: {api1_response.status_code} {api1_response.text}")
+                if api1_response.ok:
+                    api1_json = api1_response.json()
+                    if api1_json.get('success'):
+                        result['api1_status'] = 'SUCCESS'
+                    else:
+                        result['api1_status'] = 'FAILED'
+                        result['api1_error'] = api1_json.get('message', 'Unknown error from API1')
+                else:
+                    result['api1_status'] = 'FAILED'
+                    result['api1_error'] = api1_response.text
+            except Exception as e:
+                result['api1_status'] = 'FAILED'
+                result['api1_error'] = str(e)
+        else:
+            result['api1_status'] = 'FAILED'
+            result['api1_error'] = 'Thiếu employeeNumber, không thể cập nhật API1'
+
+        # Gọi API2 nếu có idEmployee
+        if id_employee and id_employee.lower() != 'n/a':
+            try:
+                api2_url = f"{Config.API2_URL}/employee/{id_employee}"
+                logger.info(f"[UPDATE][API2] URL: {api2_url}")
+                logger.info(f"[UPDATE][API2] idEmployee: {id_employee}")
+                logger.info(f"[UPDATE][API2] Data: {json.dumps(api2_data, ensure_ascii=False)}")
+                api2_response = requests.put(api2_url, json=api2_data, timeout=5)
+                logger.info(f"API2 Response: {api2_response.status_code} {api2_response.text}")
+                if api2_response.ok:
+                    api2_json = api2_response.json()
+                    if api2_json.get('success'):
+                        result['api2_status'] = 'SUCCESS'
+                    else:
+                        result['api2_status'] = 'FAILED'
+                        result['api2_error'] = api2_json.get('message', 'Unknown error from API2')
+                else:
+                    result['api2_status'] = 'FAILED'
+                    result['api2_error'] = api2_response.text
+            except Exception as e:
+                result['api2_status'] = 'FAILED'
+                result['api2_error'] = str(e)
+        else:
+            result['api2_status'] = 'FAILED'
+            result['api2_error'] = 'Thiếu idEmployee, không thể cập nhật API2'
+
+        logger.info(f"Kết quả cập nhật: {json.dumps(result, ensure_ascii=False)}")
+        return result
